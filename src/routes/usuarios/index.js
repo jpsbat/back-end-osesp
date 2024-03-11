@@ -98,7 +98,7 @@ router.post('/cadastrar', function (req, res) {
     }
 });
 
-router.patch('/alterar/:id', function (req, res) {
+router.put('/alterar/:id', function (req, res) {
 
     try {
 
@@ -118,7 +118,7 @@ router.patch('/alterar/:id', function (req, res) {
             }
 
             conn.execute('UPDATE tbUsuario SET nome = ?, login = ?, senha = ?, idPermissaoAcesso = ?, ativo = ? WHERE id = ?;',
-            [req.body.nome, req.body.login, req.body.senha, req.body.idPermissaoAcesso, req.body.ativo, req.params.id],
+            [req.body.nome, req.body.login, req.body.senha, req.body.idpermissaoacesso, req.body.ativo, req.params.id],
             function (err, response, fields) {
 
                 if (err) throw err;

@@ -98,7 +98,7 @@ router.post('/cadastrar', function (req, res) {
     }
 });
 
-router.patch('/alterar/:id', function (req, res) {
+router.put('/alterar/:id', function (req, res) {
 
     try {
 

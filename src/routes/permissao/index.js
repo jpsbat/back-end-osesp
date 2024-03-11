@@ -58,4 +58,88 @@ router.post('/cadastrar', function (req, res) {
     }
 });
 
+router.put('/alterar/:idusuario/:idmenu', function (req, res) {
+
+    try {
+
+        if (!req.params.idusuario) {
+            if (!req.params.idmenu) {
+                return res.status(400).json({
+                    msg: 'ID não fornecido na requisição!'
+                });
+            }
+        }
+
+        conn.execute('SELECT * FROM tbPermissao WHERE idUsuario = ? AND idMenu = ?;', [req.params.idusuario, req.params.idmenu], function (err, response, fields) {
+            if (err) throw err;
+
+            if (response.length === 0) {
+                return res.status(404).json({
+                    msg: 'ID fornecido não encontrado!'
+                });
+            }
+
+            conn.execute('UPDATE tbPermissao SET idUsuario = ?, idMenu = ? WHERE idUsuario = ? AND idMenu = ?;',
+            [req.body.idusuario, req.body.idmenu, req.body.idusuario, req.body.idmenu],
+            function (err, response, fields) {
+
+                if (err) throw err;
+        
+                res.status(200).json({
+                    msg: 'Atualizado com sucesso!',
+                    data: response
+                });
+            });
+        });
+        
+    } catch (error) {
+        
+        res.status(500).json({
+            msg: 'Erro ao atualizar!',
+            data: error
+        });
+    }
+});
+
+router.delete('/excluir/:idusuario/:idmenu', function (req, res) {
+
+    try {
+
+        if (!req.params.idusuario) {
+            if (!req.params.idmenu) {
+                return res.status(400).json({
+                    msg: 'ID não fornecido na requisição!'
+                });
+            }
+        }
+
+        conn.execute('SELECT * FROM tbPermissao WHERE idUsuario = ? AND idMenu = ?;', [req.params.idusuario, req.params.idmenu], function (err, response, fields) {
+            if (err) throw err;
+
+            if (response.length === 0) {
+                return res.status(404).json({
+                    msg: 'ID fornecido não encontrado!'
+                });
+            }
+
+            conn.execute('DELETE FROM tbPermissao WHERE idUsuario = ? AND idMenu = ?;', [req.params.idusuario, req.params.idmenu], function (err, response, fields) {
+
+                if (err) throw err;
+        
+                res.status(200).json({
+                    msg: 'Excluído com sucesso!',
+                    data: response
+                });
+            });
+        });
+        
+    } catch (error) {
+        
+        res.status(500).json({
+            msg: 'Erro ao excluir!',
+            data: error
+        });
+    }
+});
+
 module.exports = router;
