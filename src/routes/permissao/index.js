@@ -36,6 +36,17 @@ router.get('/listar', function (req, res) {
 router.post('/cadastrar', function (req, res) {
 
     try {
+        const { idusuario, idmenu } = req.body;
+
+        if (!idusuario || !idmenu) {
+            return res.status(400).json({
+                msg: 'Preencha todos os campos obrigatórios.'
+            });
+        } if (isNaN(idusuario) && isNaN(idmenu)) {
+            return res.status(400).json({
+                msg: 'Os campos devem ser números inteiros!.'
+            });
+        }
 
         conn.execute('INSERT INTO tbPermissao (idUsuario, idMenu) values (?, ?);',
         [req.body.idusuario, req.body.idmenu],
@@ -68,6 +79,18 @@ router.put('/alterar/:idusuario/:idmenu', function (req, res) {
                     msg: 'ID não fornecido na requisição!'
                 });
             }
+        }
+
+        const { idusuario, idmenu } = req.body;
+
+        if (!idusuario || !idmenu) {
+            return res.status(400).json({
+                msg: 'Preencha todos os campos obrigatórios.'
+            });
+        } if (isNaN(idusuario) && isNaN(idmenu)) {
+            return res.status(400).json({
+                msg: 'Os campos devem ser números inteiros!.'
+            });
         }
 
         conn.execute('SELECT * FROM tbPermissao WHERE idUsuario = ? AND idMenu = ?;', [req.params.idusuario, req.params.idmenu], function (err, response, fields) {

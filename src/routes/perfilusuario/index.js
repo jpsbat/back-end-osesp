@@ -77,6 +77,18 @@ router.post('/cadastrar', function (req, res) {
 
     try {
 
+        const { descricao, administrador } = req.body;
+
+        if (!descricao || isNaN(administrador)) {
+            return res.status(400).json({
+                msg: 'Preencha todos os campos.'
+            });
+        } if (administrador !== 0 && administrador !== 1) {
+            return res.status(400).json({
+                msg: 'O administrador deve ser 0 (não) ou 1 (sim)'
+            })
+        }
+
         conn.execute('INSERT INTO tbPerfilUsuario (descricao, administrador) values (?, ?);',
         [req.body.descricao, req.body.administrador],
         function (err, response, fields) {
@@ -102,12 +114,6 @@ router.patch('/alterar/:id', function (req, res) {
 
     try {
 
-        if (!req.params.id) {
-            return res.status(400).json({
-                msg: 'ID não fornecido na requisição!'
-            });
-        }
-
         conn.execute('SELECT * FROM tbPerfilUsuario WHERE id = ?;', [req.params.id], function (err, response, fields) {
             if (err) throw err;
 
@@ -115,6 +121,18 @@ router.patch('/alterar/:id', function (req, res) {
                 return res.status(404).json({
                     msg: 'ID fornecido não encontrado!'
                 });
+            }
+
+            const { descricao, administrador } = req.body;
+
+            if (!descricao || isNaN(administrador)) {
+                return res.status(400).json({
+                    msg: 'Preencha todos os campos.'
+                });
+            } if (administrador !== 0 && administrador !== 1) {
+                return res.status(400).json({
+                    msg: 'O administrador deve ser 0 (não) ou 1 (sim)'
+                })
             }
 
             conn.execute('UPDATE tbPerfilUsuario SET descricao = ?, administrador = ? WHERE id = ?;',

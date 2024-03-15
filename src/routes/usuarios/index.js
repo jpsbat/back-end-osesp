@@ -107,6 +107,21 @@ router.post('/login', function(req, res) {
 router.put('/alterar/:id', function (req, res) {
 
     try {
+        const { nome, login, senha, ativo, idperfilusuario } = req.body;
+
+        if (!nome || !login || !senha) {
+            return res.status(400).json({
+                msg: 'Preencha todos os campos obrigatórios.'
+            });
+        } if (isNaN(idperfilusuario) || isNaN(ativo)) {
+            return res.status(400).json({
+                msg: 'Atente que IdPerfilUsuario e Ativo devem ser números inteiros.'
+            });
+        } if (ativo !== 0 && ativo !== 1) {
+            return res.status(400).json({
+                msg: 'Ativo deve ser 0 (não) ou 1 (sim)'
+            })
+        }
 
         if (!req.params.id) {
             return res.status(400).json({
@@ -123,17 +138,25 @@ router.put('/alterar/:id', function (req, res) {
                 });
             }
 
-            conn.execute('UPDATE tbUsuario SET nome = ?, login = ?, senha = ?, idPermissaoAcesso = ?, ativo = ? WHERE id = ?;',
-            [req.body.nome, req.body.login, req.body.senha, req.body.idperfilusuario, req.body.ativo, req.params.id],
-            function (err, response, fields) {
-
-                if (err) throw err;
-        
-                res.status(200).json({
-                    msg: 'Atualizado com sucesso!',
-                    data: response
+            conn.execute('UPDATE tbUsuario SET nome = ?, login = ?, senha = ?, idPerfilUsuario = ?, ativo = ? WHERE id = ?;',
+    [req.body.nome, req.body.login, req.body.senha, req.body.idperfilusuario, req.body.ativo, req.params.id],
+    function (err, response, fields) {
+        if (err) {
+            if (err.code === 'ER_NO_REFERENCED_ROW_2') {
+                return res.status(404).json({
+                    msg: 'ID de permissão fornecido não encontrado!'
                 });
-            });
+            } else {
+                throw err;
+            }
+        }
+
+        res.status(200).json({
+            msg: 'Atualizado com sucesso!',
+            data: response
+        });
+    });
+
         });
         
     } catch (error) {

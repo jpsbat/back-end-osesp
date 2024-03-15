@@ -76,6 +76,22 @@ router.get('/:id', function (req, res) {
 router.post('/cadastrar', function (req, res) {
 
     try {
+        const { descricao, link, idpai, ordem, ativo } = req.body
+
+        if (isNaN(idpai) || isNaN(ordem) || isNaN(ativo)) {
+            return res.status(400).json({
+                msg: 'Atente que IdPai, Ordem e Ativo devem ser números inteiros.'
+            });
+        } if (!descricao || !link) {
+            return res.status(400).json({
+                msg: 'Preencha todos os campos.'
+            });
+        } if (ativo !== 0 && ativo !== 1) {
+            return res.status(400).json({
+                msg: 'Ativo deve ser 0 (não) ou 1 (sim)'
+            })
+        }
+
 
         conn.execute('INSERT INTO tbMenu (descricao, link, idPai, ordem, ativo) values (?, ?, ?, ?, ?);',
         [req.body.descricao, req.body.link, req.body.idpai, req.body.ordem, req.body.ativo],
@@ -107,6 +123,15 @@ router.put('/alterar/:id', function (req, res) {
                 msg: 'ID não fornecido na requisição!'
             });
         }
+        
+        const { descricao, link, idpai, ordem, ativo } = req.body
+
+        if (!descricao || !link || !idpai || !ordem || !ativo) {
+            return res.status(400).json({
+                msg: 'Preencha todos os campos.'
+            });
+        }
+
 
         conn.execute('SELECT * FROM tbMenu WHERE id = ?;', [req.params.id], function (err, response, fields) {
             if (err) throw err;
