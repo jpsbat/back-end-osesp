@@ -11,8 +11,8 @@ app.use('/routes/menu', menu);
 const permissao = require('./routes/permissao');
 app.use('/routes/permissao', permissao);
 
-const permissaoacesso = require('./routes/permissaoacesso');
-app.use('/routes/permissaoacesso', permissaoacesso);
+const perfilusuario = require('./routes/perfilusuario');
+app.use('/routes/perfilusuario', perfilusuario);
 
 const usuarios = require('./routes/usuarios');
 app.use('/routes/usuarios', usuarios);

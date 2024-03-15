@@ -78,7 +78,7 @@ router.post('/cadastrar', function (req, res) {
     try {
 
         conn.execute('INSERT INTO tbUsuario (nome, login, senha, idPermissaoAcesso, ativo) values (?, ?, ?, ?, ?);',
-        [req.body.nome, req.body.login, req.body.senha, req.body.idpermissaoacesso, req.body.ativo],
+        [req.body.nome, req.body.login, req.body.senha, req.body.idperfilusuario, req.body.ativo],
         function (err, response, fields) {
 
             if (err) throw err;
@@ -118,7 +118,7 @@ router.put('/alterar/:id', function (req, res) {
             }
 
             conn.execute('UPDATE tbUsuario SET nome = ?, login = ?, senha = ?, idPermissaoAcesso = ?, ativo = ? WHERE id = ?;',
-            [req.body.nome, req.body.login, req.body.senha, req.body.idpermissaoacesso, req.body.ativo, req.params.id],
+            [req.body.nome, req.body.login, req.body.senha, req.body.idperfilusuario, req.body.ativo, req.params.id],
             function (err, response, fields) {
 
                 if (err) throw err;

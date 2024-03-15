@@ -14,7 +14,7 @@ router.get('/listar', function (req, res) {
 
     try {
 
-        conn.execute('SELECT * FROM tbPermissaoAcesso;', function (err, response, fields) {
+        conn.execute('SELECT * FROM tbPerfilUsuario;', function (err, response, fields) {
 
             if (err) throw err;
     
@@ -43,7 +43,7 @@ router.get('/:id', function (req, res) {
             });
         }
 
-        conn.execute('SELECT * FROM tbPermissaoAcesso WHERE id = ?;', [req.params.id], function (err, response, fields) {
+        conn.execute('SELECT * FROM tbPerfilUsuario WHERE id = ?;', [req.params.id], function (err, response, fields) {
             if (err) throw err;
 
             if (response.length === 0) {
@@ -53,7 +53,7 @@ router.get('/:id', function (req, res) {
             }
 
             conn.execute(
-                `SELECT * FROM tbPermissaoAcesso WHERE id = ?;`, [req.params.id], function (err, response, fields) {
+                `SELECT * FROM tbPerfilUsuario WHERE id = ?;`, [req.params.id], function (err, response, fields) {
         
                 if (err) throw err;
 
@@ -77,7 +77,7 @@ router.post('/cadastrar', function (req, res) {
 
     try {
 
-        conn.execute('INSERT INTO tbPermissaoAcesso (descricao, administrador) values (?, ?);',
+        conn.execute('INSERT INTO tbPerfilUsuario (descricao, administrador) values (?, ?);',
         [req.body.descricao, req.body.administrador],
         function (err, response, fields) {
 
@@ -108,7 +108,7 @@ router.patch('/alterar/:id', function (req, res) {
             });
         }
 
-        conn.execute('SELECT * FROM tbPermissaoAcesso WHERE id = ?;', [req.params.id], function (err, response, fields) {
+        conn.execute('SELECT * FROM tbPerfilUsuario WHERE id = ?;', [req.params.id], function (err, response, fields) {
             if (err) throw err;
 
             if (response.length === 0) {
@@ -117,7 +117,7 @@ router.patch('/alterar/:id', function (req, res) {
                 });
             }
 
-            conn.execute('UPDATE tbPermissaoAcesso SET descricao = ?, administrador = ? WHERE id = ?;',
+            conn.execute('UPDATE tbPerfilUsuario SET descricao = ?, administrador = ? WHERE id = ?;',
             [req.body.descricao, req.body.administrador, req.params.id],
             function (err, response, fields) {
 
@@ -149,7 +149,7 @@ router.delete('/excluir/:id', function (req, res) {
             });
         }
 
-        conn.execute('SELECT * FROM tbPermissaoAcesso WHERE id = ?;', [req.params.id], function (err, response, fields) {
+        conn.execute('SELECT * FROM tbPerfilUsuario WHERE id = ?;', [req.params.id], function (err, response, fields) {
             if (err) throw err;
 
             if (response.length === 0) {
@@ -158,7 +158,7 @@ router.delete('/excluir/:id', function (req, res) {
                 });
             }
 
-            conn.execute('DELETE FROM tbPermissaoAcesso WHERE id = ?;', [req.params.id], function (err, response, fields) {
+            conn.execute('DELETE FROM tbPerfilUsuario WHERE id = ?;', [req.params.id], function (err, response, fields) {
 
                 if (err) throw err;
         
