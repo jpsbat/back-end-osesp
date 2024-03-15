@@ -73,28 +73,46 @@ router.get('/:id', function (req, res) {
     }
 });
 
-router.post('/cadastrar', function (req, res) {
-
-    try {
-
-        conn.execute('INSERT INTO tbUsuario (nome, login, senha, idPermissaoAcesso, ativo) values (?, ?, ?, ?, ?);',
-        [req.body.nome, req.body.login, req.body.senha, req.body.idperfilusuario, req.body.ativo],
-        function (err, response, fields) {
-
-            if (err) throw err;
+router.post('/login', (req, res) => {
+    const { login, senha } = req.body;
     
-            res.status(200).json({
-                msg: 'Cadastrado com sucesso!',
-                data: response
-            });
+    if (!login || !senha) {
+      return res.status(400).json({ error: 'Campos obrigatórios não preenchidos' });
+    }
+  
+    const query = 'SELECT * FROM tbUsuario WHERE login = ? AND senha = ?';
+    conn.query(query, [login, senha], (err, result) => {
+      if (err) {
+        throw err;
+      }
+      if (result.length === 0) {
+        return res.status(401).json({ error: 'Email ou senha incorretos' });
+      }
+      res.status(200).json({ message: 'Login bem-sucedido' });
+    });
+});
+
+router.post('/login', function (req, res) {
+    try {
+        const { login, senha } = req.body;
+
+        if (!login || !senha) {
+            return res.status(400).json({ msg: 'Campos obrigatórios não preenchidos' });
+        }
+
+        conn.execute('SELECT * FROM tbUsuario WHERE login = ? AND senha = ?;', [login, senha], function (err, response, fields) {
+            if (err) {
+                return res.status(500).json({ msg: 'Erro ao tentar fazer login', error: err });
+            }
+
+            if (response.length === 0) {
+                return res.status(401).json({ msg: 'Email ou senha incorretos' });
+            }
+
+            res.status(200).json({ msg: 'Login bem-sucedido', data: response[0] });
         });
-        
     } catch (error) {
-        
-        res.status(500).json({
-            msg: 'Erro ao cadastrar!',
-            data: error
-        });
+        res.status(500).json({ msg: 'Erro ao tentar fazer login', error: error });
     }
 });
 
