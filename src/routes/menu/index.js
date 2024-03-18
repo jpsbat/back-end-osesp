@@ -73,46 +73,84 @@ router.get('/:id', function (req, res) {
     }
 });
 
-router.post('/cadastrar', function (req, res) {
-
+router.post('/cadastrar', async function (req, res) {
     try {
-        const { descricao, link, idpai, ordem, ativo } = req.body
+        const { descricao, link, idpai, ordem, ativo } = req.body;
 
-        if (isNaN(idpai) || isNaN(ordem) || isNaN(ativo)) {
+        if (isNaN(ordem) || isNaN(ativo)) {
             return res.status(400).json({
-                msg: 'Atente que IdPai, Ordem e Ativo devem ser números inteiros.'
+                msg: 'Ordem deve ser um número inteiro.'
             });
-        } if (!descricao || !link) {
+        }
+
+        if (!descricao || !link || !ativo) {
             return res.status(400).json({
                 msg: 'Preencha todos os campos.'
             });
-        } if (ativo !== 0 && ativo !== 1) {
-            return res.status(400).json({
-                msg: 'Ativo deve ser 0 (não) ou 1 (sim)'
-            })
         }
 
-
-        conn.execute('INSERT INTO tbMenu (descricao, link, idPai, ordem, ativo) values (?, ?, ?, ?, ?);',
-        [req.body.descricao, req.body.link, req.body.idpai, req.body.ordem, req.body.ativo],
-        function (err, response, fields) {
-
-            if (err) throw err;
-    
-            res.status(200).json({
-                msg: 'Cadastrado com sucesso!',
-                data: response
+        if (ativo !== 0 && ativo !== 1) {
+            return res.status(400).json({
+                msg: 'Ativo deve ser 0 (não) ou 1 (sim)'
             });
+        }
+
+        const idpaiExists = await checkIfIdPaiExists(idpai);
+        if (!idpaiExists) {
+            return res.status(404).json({
+                msg: 'Este ID Pai não existe.'
+            });
+        }
+
+        conn.beginTransaction(function (err) {
+            if (err) {
+                throw err;
+            }
+
+            conn.execute('INSERT INTO tbMenu (descricao, link, idPai, ordem, ativo) VALUES (?, ?, ?, ?, ?);',
+                [descricao, link, idpai, ordem, ativo],
+                function (err, result) {
+                    if (err) {
+                        conn.rollback(function () {
+                            throw err;
+                        });
+                    }
+
+                    conn.commit(function (err) {
+                        if (err) {
+                            conn.rollback(function () {
+                                throw err;
+                            });
+                        }
+
+                        res.status(200).json({
+                            msg: 'Cadastrado com sucesso!',
+                            data: result
+                        });
+                    });
+                });
         });
-        
+
     } catch (error) {
-        
         res.status(500).json({
             msg: 'Erro ao cadastrar!',
             data: error
         });
     }
 });
+
+function checkIfIdPaiExists(idpai) {
+    return new Promise((resolve, reject) => {
+        conn.query('SELECT COUNT(*) AS count FROM tbMenu WHERE id = ?', [idpai], function (err, result) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result[0].count > 0);
+            }
+        });
+    });
+}
+
 
 router.put('/alterar/:id', function (req, res) {
 
